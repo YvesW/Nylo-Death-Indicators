@@ -25,10 +25,10 @@ import net.runelite.api.PlayerComposition;
 import net.runelite.api.Renderable;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
+import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
-import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.kit.KitType;
@@ -155,6 +155,7 @@ public class NyloDeathIndicatorsPlugin extends Plugin
 			if (!isInNyloRegion)
 			{
 				this.nylos.clear();
+				this.deadNylos.clear();
 			}
 		}
 
@@ -170,6 +171,20 @@ public class NyloDeathIndicatorsPlugin extends Plugin
 				nylocas.setHidden(0);
 				nylocasIterator.remove();
 			}
+		}
+	}
+
+	@Subscribe
+	protected void onBeforeRender(BeforeRender event)
+	{
+		if (!isInNyloRegion)
+		{
+			return;
+		}
+
+		for (Nylocas nylo : deadNylos)
+		{
+			nylo.getNpc().setDead(true);
 		}
 	}
 
@@ -261,18 +276,6 @@ public class NyloDeathIndicatorsPlugin extends Plugin
 	}
 
 	@Subscribe
-	protected void onNpcDespawned(NpcDespawned event)
-	{
-		if (!isInNyloRegion)
-		{
-			return;
-		}
-
-		this.nylos.removeIf((nylo) -> nylo.getNpcIndex() == event.getNpc().getIndex());
-		this.deadNylos.removeIf((nylo) -> nylo.getNpcIndex() == event.getNpc().getIndex());
-	}
-
-	@Subscribe
 	protected void onHitsplatApplied(HitsplatApplied event)
 	{
 		if (!isInNyloRegion)
@@ -333,7 +336,6 @@ public class NyloDeathIndicatorsPlugin extends Plugin
 					if (deadNylos.stream().noneMatch(deadNylo -> deadNylo.getNpcIndex() == npcIndex))
 					{
 						deadNylos.add(nylocas);
-						nylocas.getNpc().setDead(true);
 					}
 				}
 			}
