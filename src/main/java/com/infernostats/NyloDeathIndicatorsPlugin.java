@@ -391,7 +391,7 @@ public class NyloDeathIndicatorsPlugin extends Plugin
 		}
 
 		int weaponUsed = playerComposition.getEquipmentId(KitType.WEAPON);
-		int attackStyle = client.getVarpValue(VarPlayer.ATTACK_STYLE.getId());
+		int attackStyle = client.getVarpValue(VarPlayer.ATTACK_STYLE);
 
 		boolean isChinchompa = CHINCHOMPAS.contains(weaponUsed);
 		boolean isPoweredStaff = POWERED_STAVES.contains(weaponUsed);
